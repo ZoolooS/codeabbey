@@ -10,37 +10,35 @@ https://www.codeabbey.com/index/task_view/chords-of-music
 def what_tone_are_there(chords):
     major_shift = 4
     minor_shift = 3
+    full_shift = 7
     out = []
 
     for chord in chords:
-        if (chord[0] + major_shift) % steps in [el % steps for el in chord[1:]]:
-            out.append('major')
-        elif (chord[0] + minor_shift) % steps in [el % steps for el in chord[1:]]:
-            out.append('minor')
-        else:
-            out.append('other')
+        for note in chord:
+            is_right_chord = (note + full_shift) % steps in chord
+            if ((note + major_shift) % steps in chord) and is_right_chord:
+                out.append(f'{get_note(note)}-major')
+                break
+            elif ((note + minor_shift) % steps in chord) and is_right_chord:
+                out.append(f'{get_note(note)}-minor')
+                break
+            elif note == chord[-1]:
+                out.append('other')
 
     return out
 
 
-def get_root_note(chords):
+def get_note(note_num):
     octave = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    out = []
 
-    for chord in chords:
-        out.append(octave[chord[0] % steps])
-
-    return out
+    return octave[note_num]
 
 
 # ====== main code ====================================== #
 n_chords = int(input())
-chords = [[int(key) for key in input().split()] for _ in range(n_chords)]
 steps = 12
+chords = [list(set([int(note) % steps for note in input().split()])) for _ in range(n_chords)]
 
-chord = get_root_note(chords)
-tone = what_tone_are_there(chords)
-
-[print(f'{chord[i]}-{tone[i]}', end=' ') if tone[i] != 'other' else print(tone[i], end=' ') for i in range(n_chords)]
+print(*what_tone_are_there(chords))
 
 # ====== end of code ==================================== #
